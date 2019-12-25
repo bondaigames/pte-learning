@@ -3,6 +3,7 @@ import Dropdown from "../Dropdown/Dropdown";
 import ReactPlayer from "react-player";
 import _ from "lodash";
 import FontAwesome from "react-fontawesome";
+import Duration from "./Duration/Duration";
 
 class Player extends Component {
   state = {
@@ -99,8 +100,30 @@ class Player extends Component {
     });
   };
 
+  //   componentDidUpdate() {
+  //     console.log("hello world", this.props);
+  //     this.load(this.props.source.AudioStream.data);
+  //   }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.source !== this.props.source) {
+      //Perform some operation here
+      //   this.setState({ someState: someValue });
+      //   this.classMethod();
+
+      let base64String =
+        "data:" +
+        this.props.source.ContentType +
+        ";base64," +
+        btoa(String.fromCharCode(...this.props.source.AudioStream.data));
+      this.load(base64String);
+    }
+  }
+
   componentDidMount() {
-    this.load("https://pte-learning.s3-ap-southeast-2.amazonaws.com/517.mp3");
+    // this.load("https://pte-learning.s3-ap-southeast-2.amazonaws.com/517.mp3");
+    // this.load(this.props.source.AudioStream.data);
+    console.log("hello world", this.props.source);
   }
 
   handlePlayPause = () => {
@@ -173,6 +196,13 @@ class Player extends Component {
     console.log("after end", this.state);
   };
 
+  handleDuration = duration => {
+    console.log("onDuration", duration);
+    this.setState({
+      player: { ...this.state.player, duration }
+    });
+  };
+
   renderLoadButton = (url, label) => {
     return <button onClick={() => this.load(url)}>{label}</button>;
   };
@@ -198,7 +228,10 @@ class Player extends Component {
     } = this.state.player;
     return (
       <React.Fragment>
-        <div className="form-group d-flex align-items-center align-items-sm-center align-items-md-center">
+        <div
+          className="form-group border rounded d-flex align-items-center align-items-sm-center align-items-md-center"
+          style={{ padding: "10px" }}
+        >
           <button
             className="btn mr-1"
             type="button"
@@ -218,7 +251,7 @@ class Player extends Component {
           ></Dropdown>
           <input
             type="range"
-            className="custom-range mr-1"
+            className="custom-range mr-1 d-none d-sm-block"
             min={0}
             max={1}
             step="any"
@@ -227,6 +260,10 @@ class Player extends Component {
             onChange={this.handleSeekChange}
             onMouseUp={this.handleSeekMouseUp}
           />
+          <label className="text-success mr-1" style={{ fontSize: "13px" }}>
+            <Duration seconds={duration * played} />/
+            <Duration seconds={duration} />
+          </label>
           <button
             className="btn btn-secondary mr-1"
             type="button"
