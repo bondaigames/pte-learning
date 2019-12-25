@@ -107,23 +107,14 @@ class Player extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.source !== this.props.source) {
-      //Perform some operation here
-      //   this.setState({ someState: someValue });
-      //   this.classMethod();
-
-      let base64String =
-        "data:" +
-        this.props.source.ContentType +
-        ";base64," +
-        btoa(String.fromCharCode(...this.props.source.AudioStream.data));
-      this.load(base64String);
+      this.load(this.props.source.data.url);
     }
   }
 
   componentDidMount() {
     // this.load("https://pte-learning.s3-ap-southeast-2.amazonaws.com/517.mp3");
     // this.load(this.props.source.AudioStream.data);
-    console.log("hello world", this.props.source);
+    // console.log("hello world", this.props.source);
   }
 
   handlePlayPause = () => {
@@ -154,6 +145,7 @@ class Player extends Component {
   };
 
   handleSeekMouseUp = e => {
+    console.log("seeking change 123", e.target.value);
     this.setState({ player: { ...this.state.player, seeking: false } });
     this.player.seekTo(parseFloat(e.target.value));
   };
@@ -163,6 +155,7 @@ class Player extends Component {
   };
 
   handleSeekChange = e => {
+    console.log("seeking change", e.target.value);
     this.setState({
       player: { ...this.state.player, played: parseFloat(e.target.value) }
     });
@@ -229,7 +222,7 @@ class Player extends Component {
     return (
       <React.Fragment>
         <div
-          className="form-group border rounded d-flex align-items-center align-items-sm-center align-items-md-center"
+          className="form-group border rounded d-inline-flex align-items-center align-items-sm-center align-items-md-center float-left"
           style={{ padding: "10px" }}
         >
           <button
@@ -249,20 +242,33 @@ class Player extends Component {
             list={this.state.speed}
             toggleSelected={this.toggleSelected}
           ></Dropdown>
-          <input
-            type="range"
-            className="custom-range mr-1 d-none d-sm-block"
-            min={0}
-            max={1}
-            step="any"
-            value={played}
-            onMouseDown={this.handleSeekMouseDown}
-            onChange={this.handleSeekChange}
-            onMouseUp={this.handleSeekMouseUp}
-          />
+          {console.log("ddddddddd", this.state.player.duration)}
+          {this.state.player.loaded !== 0 ? (
+            <input
+              type="range"
+              className="custom-range mr-1 d-none d-sm-block"
+              min={0}
+              max={1}
+              step="any"
+              value={played}
+              onMouseDown={this.handleSeekMouseDown}
+              onChange={this.handleSeekChange}
+              onMouseUp={this.handleSeekMouseUp}
+            />
+          ) : (
+            <div style={{ width: "130px" }}></div>
+          )}
+
           <label className="text-success mr-1" style={{ fontSize: "13px" }}>
-            <Duration seconds={duration * played} />/
-            <Duration seconds={duration} />
+            {/* this.state.player.loaded !== 0 && this.state.player.played >= 1 */}
+            {isFinite(duration) && duration !== 0 ? (
+              <Duration seconds={duration * played} /> /
+              <Duration seconds={duration} />
+            ) : !_.isNil(this.state.player.playedSeconds) ? (
+              <Duration seconds={this.state.player.playedSeconds} />
+            ) : (
+              "0:00"
+            )}
           </label>
           <button
             className="btn btn-secondary mr-1"
