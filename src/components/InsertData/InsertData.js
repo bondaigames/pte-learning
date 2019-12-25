@@ -9,21 +9,19 @@ class InsertData extends Component {
     error: ""
   };
   insertDataToDatabase = e => {
-    console.log(this.props);
-    if (this.props.file !== null && !_.isEmpty(this.props.sheet))
+    console.log("file: ", !_.isEmpty(this.props.file.name));
+    if (!_.isEmpty(this.props.file.name) && !_.isEmpty(this.props.sheet)) {
       readExcelFile(this.props.file, this.props.sheet, callback => {
         if (callback.error !== null) {
           console.log(callback);
           this.insertWFDQuestionBank(callback.data, callback.cols);
           return;
         }
-        this.setState({ error: callback.error });
+        // this.setState({ error: callback.error });
       });
-    // this.props.handleFile(this.props.sheet, (data, cols) => {
-    //   this.insertWFDQuestionBank(data, cols);
-    //   //
-    //   // console.log(data, cols);
-    // });
+    } else {
+      this.props.updatedData({ error: "There is no file uploaded" });
+    }
   };
 
   insertWFDQuestionBank = (data, cols) => {
@@ -98,12 +96,19 @@ class InsertData extends Component {
     return (
       <React.Fragment>
         <button
+          className="btn btn-secondary mr-3"
+          type="button"
+          onClick={this.insertDataToDatabase}
+        >
+          {this.props.children}
+        </button>
+        {/* <button
           type="button"
           className="btn btn-dark"
           onClick={this.insertDataToDatabase}
         >
           {this.props.children}
-        </button>
+        </button> */}
       </React.Fragment>
     );
   }

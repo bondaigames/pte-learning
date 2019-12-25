@@ -28,8 +28,11 @@ class QuestionBuilder extends Component {
         ...this.state,
         data: data
       });
-      console.log("testing: ", this.state.data.data);
-      console.log("cols: ", this.state.data.cols);
+    } else {
+      this.setState({
+        ...this.state,
+        data: data
+      });
     }
   };
 
@@ -52,15 +55,12 @@ class QuestionBuilder extends Component {
     return (
       <React.Fragment>
         {alert}
+        <h1>Question Builder</h1>
         <DragDropFile updatedFile={this.updatedFile}>
-          <div className="row">
-            <div className="col-xs-12">
-              <DataInput updatedFile={this.updatedFile} />
-            </div>
-          </div>
+          <DataInput updatedFile={this.updatedFile} />
         </DragDropFile>
 
-        <div className="d-flex flex-wrap">
+        <div>
           <InsertData
             file={this.state.file}
             sheet={SHEET_ONE}

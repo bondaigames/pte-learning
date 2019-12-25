@@ -16,13 +16,13 @@ class DataInput extends Component {
 
   render() {
     return (
-      <form className="form-inline">
-        <div className="form-group">
-          <label htmlFor="file">Spreadsheet</label>
+      <form>
+        <div className="form-group text-center">
+          <label>Spreadsheet: </label>
           <input
             type="file"
-            className="form-control"
             id="file"
+            className="border rounded-0"
             accept={SheetJSFT}
             onChange={this.handleChange}
           />

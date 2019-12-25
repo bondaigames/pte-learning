@@ -7,7 +7,7 @@ import QuestionBuilder from "./containers/QuestionBuilder/QuestionBuilder";
 
 function App() {
   return (
-    <div className="container">
+    <div className="container text-center">
       <QuestionBuilder></QuestionBuilder>
       {/* <ExcelReader></ExcelReader> */}
     </div>
