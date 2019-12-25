@@ -13,7 +13,7 @@ class InsertData extends Component {
     if (this.props.file !== null && !_.isEmpty(this.props.sheet))
       readExcelFile(this.props.file, this.props.sheet, callback => {
         if (callback.error !== null) {
-          console.log(callback.data);
+          console.log(callback);
           this.insertWFDQuestionBank(callback.data, callback.cols);
           return;
         }
@@ -33,7 +33,7 @@ class InsertData extends Component {
       // console.log(data1);
       const updatedData = {
         ...data,
-        createdData: new Date()
+        createdDate: new Date()
       };
 
       axiosFirebase
@@ -41,6 +41,7 @@ class InsertData extends Component {
         .then(response => {
           const updatedData = {
             data: JSON.parse(response.config.data),
+            cols: cols,
             message: "Inserted data successfuly"
           };
           this.props.updatedData(updatedData);
@@ -68,9 +69,6 @@ class InsertData extends Component {
         })
         .catch(error => {
           this.props.updatedData({ error: "Something went wrong" });
-          // this.setState({
-          //   loading: false
-          // });
         });
     }
   };
@@ -80,8 +78,6 @@ class InsertData extends Component {
     // console.log(this.state.data);
     if (!_.isEmpty(this.state.data)) {
       console.log(this.state.data);
-      //   console.log("testing");
-      //   console.log(this.state.data);
       let base64String =
         "data:" +
         this.state.data.ContentType +

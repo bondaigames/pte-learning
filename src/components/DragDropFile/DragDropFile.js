@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { readExcelFile } from "../../utils/Utils";
 
 class DragDropFile extends Component {
   constructor(props) {

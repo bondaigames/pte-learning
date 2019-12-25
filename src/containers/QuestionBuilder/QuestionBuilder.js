@@ -4,11 +4,15 @@ import DataInput from "../../components/DataInput/DataInput";
 import InsertData from "../../components/InsertData/InsertData";
 import { SHEET_ONE, SHEET_TWO } from "../../utils/Contants";
 import _ from "lodash";
+import OutTable from "../../components/OutTable/OutTable";
 
 class QuestionBuilder extends Component {
   state = {
     file: {},
-    data: []
+    data: {
+      data: [],
+      cols: []
+    }
   };
 
   updatedFile = file => {
@@ -19,12 +23,13 @@ class QuestionBuilder extends Component {
   };
 
   updateData = data => {
-    console.log(data);
     if (_.isEmpty(data.error)) {
       this.setState({
         ...this.state,
         data: data
       });
+      console.log("testing: ", this.state.data.data);
+      console.log("cols: ", this.state.data.cols);
     }
   };
 
@@ -55,20 +60,27 @@ class QuestionBuilder extends Component {
           </div>
         </DragDropFile>
 
-        <InsertData
-          file={this.state.file}
-          sheet={SHEET_ONE}
-          updatedData={this.updateData}
-        >
-          Insert WFD
-        </InsertData>
-        <InsertData
-          file={this.state.file}
-          sheet={SHEET_TWO}
-          updatedData={this.updateData}
-        >
-          Insert RS
-        </InsertData>
+        <div className="d-flex flex-wrap">
+          <InsertData
+            file={this.state.file}
+            sheet={SHEET_ONE}
+            updatedData={this.updateData}
+          >
+            Insert WFD
+          </InsertData>
+          <InsertData
+            file={this.state.file}
+            sheet={SHEET_TWO}
+            updatedData={this.updateData}
+          >
+            Insert RS
+          </InsertData>
+        </div>
+
+        <OutTable
+          data={this.state.data.data}
+          cols={this.state.data.cols}
+        ></OutTable>
       </React.Fragment>
     );
   }
