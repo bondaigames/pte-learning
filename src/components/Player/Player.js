@@ -61,7 +61,7 @@ class Player extends Component {
     player: {
       url: null,
       pip: false,
-      playing: true,
+      playing: false,
       controls: false,
       light: false,
       volume: 1,
@@ -193,6 +193,33 @@ class Player extends Component {
     console.log("onDuration", duration);
     this.setState({
       player: { ...this.state.player, duration }
+    });
+  };
+
+  handleTogglePIP = () => {
+    this.setState({
+      player: { ...this.state.player, pip: !this.state.player.pip }
+    });
+  };
+
+  handlePlay = () => {
+    console.log("onPlay");
+    this.setState({
+      player: { ...this.state.player, playing: true }
+    });
+  };
+
+  handleEnablePIP = () => {
+    console.log("onEnablePIP");
+    this.setState({
+      player: { ...this.state.player, pip: true }
+    });
+  };
+
+  handleDisablePIP = () => {
+    console.log("onDisablePIP");
+    this.setState({
+      player: { ...this.state.player, pip: false }
     });
   };
 
