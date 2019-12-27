@@ -1,9 +1,10 @@
 import React from "react";
 
 export default function Duration({ className, seconds }) {
+  console.log("secondssecondssecondsseconds:", seconds);
   return (
     <time dateTime={`P${Math.round(seconds)}S`} className={className}>
-      {format(seconds)}
+      {/* {format(seconds)} */}
     </time>
   );
 }

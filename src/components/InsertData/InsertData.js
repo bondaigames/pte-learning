@@ -14,7 +14,12 @@ class InsertData extends Component {
       readExcelFile(this.props.file, this.props.sheet, callback => {
         if (callback.error !== null) {
           console.log(callback);
-          this.insertWFDQuestionBank(callback.data, callback.cols);
+          //remove all empty object
+          const newArray = callback.data.filter(
+            value => Object.keys(value).length !== 0
+          );
+          // const getNewestData = newArray.reverse();
+          this.insertWFDQuestionBank(newArray, callback.cols);
           return;
         }
         // this.setState({ error: callback.error });
@@ -37,8 +42,26 @@ class InsertData extends Component {
       axiosFirebase
         .post("/wfd.json", updatedData)
         .then(response => {
+          const resJSON = JSON.parse(response.config.data);
+          // console.log("response.config.data:", resJSON);
+          // const reverseKeys = Object.keys(resJSON).reverse();
+          // let reveseData1 = {};
+          // for (let key in reverseKeys) {
+          //   Object.assign({ [key]: resJSON[key] }, reveseData1);
+          // const reveseData2 = { [key]: resJSON[key] };
+          // reveseData1 = { ...reveseData1, ...reveseData2 };
+          // console.log("reversedadsadsasa:", reveseData1);
+          // }
+          // reverseKeys.map(key => {
+          //   console.log("key reverse:", key, resJSON[key]);
+          //   reveseData1 = { ...reveseData1, [key]: resJSON[key] };
+          //   console.log("reveseData1", reveseData1);
+          // });
+          // console.log(reverseKeys);
+          // console.log("reverse:", reveseData1);
+
           const updatedData = {
-            data: JSON.parse(response.config.data),
+            data: resJSON,
             cols: cols,
             message: "Inserted data successfuly"
           };
@@ -66,33 +89,12 @@ class InsertData extends Component {
           // this.props.history.push("/");
         })
         .catch(error => {
-          this.props.updatedData({ error: "Something went wrong" });
+          this.props.updatedData({ error: error.message });
         });
     }
   };
 
   render() {
-    let test = "";
-    // console.log(this.state.data);
-    if (!_.isEmpty(this.state.data)) {
-      console.log(this.state.data);
-      let base64String =
-        "data:" +
-        this.state.data.ContentType +
-        ";base64," +
-        btoa(String.fromCharCode(...this.state.data.AudioStream.data));
-
-      test = (
-        <div>
-          <audio controls>
-            <source
-              src={base64String}
-              type={this.state.data.ContentType}
-            ></source>
-          </audio>
-        </div>
-      );
-    }
     return (
       <React.Fragment>
         <button
@@ -102,13 +104,6 @@ class InsertData extends Component {
         >
           {this.props.children}
         </button>
-        {/* <button
-          type="button"
-          className="btn btn-dark"
-          onClick={this.insertDataToDatabase}
-        >
-          {this.props.children}
-        </button> */}
       </React.Fragment>
     );
   }

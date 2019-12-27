@@ -1,0 +1,17 @@
+.NavBar {
+  background-color: #d0d0d0;
+  /* 212529 */
+}
+
+.NavBarBrand {
+  font-weight: bold;
+}
+
+.NavCol {
+  font-weight: bold;
+}
+
+.NavBarNav {
+  font-size: 20px;
+  color: rgb(255, 255, 255);
+}

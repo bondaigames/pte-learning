@@ -4,6 +4,7 @@ import ReactPlayer from "react-player";
 import _ from "lodash";
 import FontAwesome from "react-fontawesome";
 import Duration from "./Duration/Duration";
+import { isMobile } from "react-device-detect";
 
 class Player extends Component {
   state = {
@@ -61,7 +62,7 @@ class Player extends Component {
     player: {
       url: null,
       pip: false,
-      playing: false,
+      playing: true,
       controls: false,
       light: false,
       volume: 1,
@@ -93,6 +94,7 @@ class Player extends Component {
       player: {
         ...this.state.player,
         url: url,
+        playing: true,
         played: 0,
         loaded: 0,
         pip: false
@@ -100,14 +102,11 @@ class Player extends Component {
     });
   };
 
-  //   componentDidUpdate() {
-  //     console.log("hello world", this.props);
-  //     this.load(this.props.source.AudioStream.data);
-  //   }
-
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.source !== this.props.source) {
-      this.load(this.props.source.data.url);
+      if (_.isEmpty(this.props.source.error)) {
+        this.load(this.props.source.data.url);
+      }
     }
   }
 
@@ -118,11 +117,9 @@ class Player extends Component {
   }
 
   handlePlayPause = () => {
-    console.log("before play pause", this.state);
     this.setState({
       player: { ...this.state.player, playing: !this.state.player.playing }
     });
-    console.log("after play pause", this.state);
   };
 
   handleVolumeChange = e => {
@@ -145,7 +142,6 @@ class Player extends Component {
   };
 
   handleSeekMouseUp = e => {
-    console.log("seeking change 123", e.target.value);
     this.setState({ player: { ...this.state.player, seeking: false } });
     this.player.seekTo(parseFloat(e.target.value));
   };
@@ -155,7 +151,6 @@ class Player extends Component {
   };
 
   handleSeekChange = e => {
-    console.log("seeking change", e.target.value);
     this.setState({
       player: { ...this.state.player, played: parseFloat(e.target.value) }
     });
@@ -165,8 +160,6 @@ class Player extends Component {
     console.log("onProgress", state);
     // We only want to update time slider if we are not currently seeking
     if (!this.state.player.seeking) {
-      console.log(state);
-      //   this.setState({ player: { ...this.state.player, obj } });
       this.setState({
         player: {
           ...this.state.player,
@@ -176,17 +169,14 @@ class Player extends Component {
           loaded: state.loaded
         }
       });
-      console.log("on progress hello", this.state);
     }
   };
 
   handleEnded = () => {
     console.log("onEnded");
-    console.log(this.state);
     this.setState({
       player: { ...this.state.player, playing: this.state.player.loop }
     });
-    console.log("after end", this.state);
   };
 
   handleDuration = duration => {
@@ -246,6 +236,31 @@ class Player extends Component {
       playbackRate,
       pip
     } = this.state.player;
+
+    let durationLabel = "0:00";
+    if (isFinite(duration) && duration !== 0) {
+      console.log("second123:", this.state.player.duration);
+      console.log("second123:", this.state.player.played);
+      durationLabel =
+        <Duration seconds={duration * played} /> /
+        <Duration seconds={duration} />;
+    } else {
+      if (!_.isNil(this.state.player.playedSeconds)) {
+        console.log("second:", this.state.player.playedSeconds);
+        durationLabel = <Duration seconds={this.state.player.playedSeconds} />;
+      }
+    }
+    /* <label className="text-success mr-1" style={{ fontSize: "13px" }}>
+            {isFinite(duration) && duration !== 0 ? (
+              <Duration seconds={duration * played} /> /
+              <Duration seconds={duration} />
+            ) : _.isNil(this.state.player.playedSeconds) ? (
+              "0:00"
+            ) : (
+              <Duration seconds={this.state.player.playedSeconds} />
+            )}
+          </label> */
+
     return (
       <React.Fragment>
         <div
@@ -264,12 +279,15 @@ class Player extends Component {
               <FontAwesome name="play-circle" size="3x" />
             )}
           </button>
-          <Dropdown
-            title="1.0x"
-            list={this.state.speed}
-            toggleSelected={this.toggleSelected}
-          ></Dropdown>
-          {console.log("ddddddddd", this.state.player.duration)}
+          {!isMobile ? (
+            <Dropdown
+              title="1.0x"
+              list={this.state.speed}
+              toggleSelected={this.toggleSelected}
+            ></Dropdown>
+          ) : (
+            ""
+          )}
           {this.state.player.loaded !== 0 ? (
             <input
               type="range"
@@ -287,16 +305,18 @@ class Player extends Component {
           )}
 
           <label className="text-success mr-1" style={{ fontSize: "13px" }}>
-            {/* this.state.player.loaded !== 0 && this.state.player.played >= 1 */}
+            {/* {durationLabel} */}
+          </label>
+          {/* <label className="text-success mr-1" style={{ fontSize: "13px" }}>
             {isFinite(duration) && duration !== 0 ? (
               <Duration seconds={duration * played} /> /
               <Duration seconds={duration} />
-            ) : !_.isNil(this.state.player.playedSeconds) ? (
-              <Duration seconds={this.state.player.playedSeconds} />
-            ) : (
+            ) : _.isNil(this.state.player.playedSeconds) ? (
               "0:00"
+            ) : (
+              <Duration seconds={this.state.player.playedSeconds} />
             )}
-          </label>
+          </label> */}
           <button
             className="btn btn-secondary mr-1"
             type="button"
@@ -323,8 +343,8 @@ class Player extends Component {
           <ReactPlayer
             ref={this.ref}
             className="react-player"
-            width="100%"
-            height="100%"
+            width="0%"
+            height="0%"
             url={url}
             pip={pip}
             playing={playing}
